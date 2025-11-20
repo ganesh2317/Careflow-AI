@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6ECFF6, #A8E6CF);
+            height: 100vh;
+            background: url("https://img.freepik.com/premium-vector/health-care-concept-with-digital-glowing-blue-hud-circle-medical-technology-background-digital-health-insurance-idea-access-welfare-vector_185386-2233.jpg")
+                    no-repeat center center/cover;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 50%;
+            height: 50%;
+            background: #ffffff13;
+            border-radius: 25px;
+            box-shadow: 0px 5px 25px rgba(0,0,0,0.25);
+            padding: 40px;
+            position: relative;
+            text-align: center;
+        }
+        /* Home Button — outside */
+.home-btn {
+    position: absolute;
+    top: 25px;
+    left: 35px;
+    font-size: 18px;
+    text-decoration: none;
+    padding: 10px 20px;
+    background: #594708;
+    color: rgb(255, 255, 255);
+    border-radius: 25px;
+    transition: 0.2s ease;
+}
+.home-btn:hover {
+    transform: scale(1.15);
+    background: #062a42;
+}
+        h1 {
+            font-size: 38px;
+            color: #e3f4fc;
+            margin-bottom: 40px;
+        }
+
+        input {
+            width: 60%;
+            padding: 15px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 20px;
+            background: #ffffff13;
+            font-size: 18px;
+            outline: none;
+            box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 35px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            background: #ec5244;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.15);
+            background: #247BA0;
+        }
+
+        p {
+            margin-top: 15px;
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+<a href="/" class="home-btn">Home</a>
+    <div class="login-container">
+
+
+        <h1>Login</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" required><br>
+            <input type="password" name="password" placeholder="Password" required><br>
+            <button type="submit">Login</button>
+        </form>
+
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Token</title>
+</head>
+<body>
+    {% include 'includes/header.html' %}
+    <h1>Your Token</h1>
+    <p>Token Number: {{ token.token_number }}</p>
+    <a href="{% url 'chatbot:chatbot' token.id %}"><button>Query</button></a>
+</body>
+</html>

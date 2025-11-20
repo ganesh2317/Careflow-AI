@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CARE FLOW - Hospital Management</title>
+
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        text-align:center;
+        height: 100vh;
+
+        background: url("https://img.freepik.com/premium-vector/health-care-concept-with-digital-glowing-blue-hud-circle-medical-technology-background-digital-health-insurance-idea-access-welfare-vector_185386-2233.jpg")
+                    no-repeat center center/cover;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+        h1 {
+            font-size: 65px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0px 0px 10px rgba(255,255,255,0.7);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+
+            /* floating animation added */
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 30px;
+            color: #0a2a3e;
+            background: #ffffffa8;
+            padding: 10px 20px;
+            border-radius: 15px;
+            display: inline-block;
+            font-style: italic;
+            animation: slideDown 1.2s ease-in-out;
+        }
+
+        button {
+            padding: 12px 30px;
+            margin: 15px;
+            border: none;
+            border-radius: 27px;
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            background: #e01e0d;
+            color: rgb(247, 242, 242);
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+            transition: 0.3s ease;
+            animation: popIn 1s ease-in-out;
+        }
+
+        button:hover {
+            transform: scale(1.15);
+            background: #d82d06;
+            box-shadow: 0px 6px 12px rgba(0,0,0,0.4);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <h1>WELCOME TO <span style="color:#FFD166;">CARE FLOW</span></h1>
+
+    <h2>“Healing begins with organized care”</h2>
+
+    <div>
+        <a href="{% url 'accounts:login' %}">
+            <button>Login</button>
+        </a>
+
+        <a href="{% url 'accounts:register' %}">
+            <button>Register</button>
+        </a>
+    </div>
+
+</body>
+</html>

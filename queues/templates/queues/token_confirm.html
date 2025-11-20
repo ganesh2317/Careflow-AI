@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Token</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4faff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 25px;
+            left: 35px;
+            font-size: 18px;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: #594708;
+            color: white;
+            border-radius: 25px;
+            transition: 0.2s ease;
+        }
+        .home-btn:hover {
+            transform: scale(1.15);
+            background: #062a42;
+        }
+
+        h1 {
+            margin-top: 50px;
+            color: #1a3d5c;
+        }
+
+        .token-box {
+            background: white;
+            width: 450px;
+            margin: 45px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .token-box p {
+            font-size: 20px;
+            margin: 18px 0;
+            color: #0a2239;
+            font-weight: bold;
+        }
+
+        button {
+            background: #086b66;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: scale(1.15);
+            background: #84e77f;
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'includes/header.html' %}
+
+    <h1>Your Token</h1>
+
+    <div class="token-box">
+        <p>Token Number: {{ token.position }}</p>
+        <p>Token ID: {{ token.token_number }}</p>
+
+        <a href="{% url 'chatbot:chatbot' token.id %}">
+            <button style="background: #28a745;">Track Queue</button>
+        </a>
+    </div>
+
+</body>
+</html>
+

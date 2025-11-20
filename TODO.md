@@ -1,0 +1,6 @@
+- [ ] Add DoctorAvailability model to appointments/models.py
+- [ ] Register DoctorAvailability in appointments/admin.py
+- [ ] Run makemigrations and migrate for new model
+- [ ] Modify appointments/views.py to list available slots and handle booking with message
+- [ ] Update appointments/templates/appointments/book.html to display slots with book buttons and success message
+- [ ] Test the booking functionality

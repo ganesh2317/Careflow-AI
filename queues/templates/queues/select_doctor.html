@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Doctor</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4faff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 30px;
+            color: #1a3d5c;
+        }
+
+        .doctor-list {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0;
+            list-style: none;
+        }
+
+        .doctor-box {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doctor-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0a2239;
+        }
+
+        button {
+            background: #68090d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            transform: scale(1.15);
+            background: #115e09;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 35px;
+            padding:10px 20px;
+            background:#184d98;
+            color:white;
+            border-radius: 18px;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            transform: scale(1.15);
+            background: #133e7a;
+        }
+
+        /* Chat with Bot Title */
+        .chat-title {
+            margin-top: 45px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #3e0404;
+        }
+
+        /* Single Line Input Bar */
+        .chat-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        .message-input {
+            width: 55%;
+            max-width: 500px;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 2px solid #bcd3ea;
+            border-radius: 25px;
+            outline: none;
+        }
+
+        .message-input:focus {
+            border-color: #239419;
+        }
+
+        .icon-btn {
+            font-size: 22px;
+            border: none;
+            background: #37840d;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .icon-btn:hover{
+            transform: scale(1.15);
+            background: #184d98;
+        }
+    </style>
+
+</head>
+<body>
+
+    {% include 'includes/header.html' %}
+
+    <h1>Choose a doctor at {{ hospital.name }}</h1>
+
+    <ul class="doctor-list">
+        {% for d in doctors %}
+            <li class="doctor-box">
+                <span class="doctor-name">{{ d }}</span>
+                <a href="{% url 'queues:book_token_doctor' d.id %}">
+                    <button>Book Token</button>
+                </a>
+            </li>
+        {% empty %}
+            <li class="doctor-box">No doctors available right now.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'hospitals:hospital_list' %}" class="back-link">Back</a>
+
+    <!-- Chat Title -->
+    <div class="chat-title">Chat with Bot</div>
+
+    <!-- Single Line Chat Input Row -->
+    <div class="chat-row">
+        <button class="icon-btn" onclick="speakText()">🔊</button>
+
+        <input type="text" id="message-input" class="message-input" placeholder="Type your message here...">
+
+        <button class="icon-btn" onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        let lastBotMessage = "";
+
+        function sendMessage() {
+            const input = document.getElementById("message-input");
+            const message = input.value.trim();
+            if (!message) return;
+
+            fetch('/chatbot/general/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: 'message=' + encodeURIComponent(message)
+            })
+            .then(response => response.json())
+            .then(data => {
+                lastBotMessage = data.response;
+            });
+
+            input.value = "";
+        }
+
+        function speakText() {
+            if (!lastBotMessage) return;
+            const speech = new SpeechSynthesisUtterance(lastBotMessage);
+            speech.pitch = 1;
+            speech.rate = 1;
+            speech.volume = 1;
+            window.speechSynthesis.speak(speech);
+        }
+
+        document.getElementById("message-input").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+
+</body>
+</html>
+

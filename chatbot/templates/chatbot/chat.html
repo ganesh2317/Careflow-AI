@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4faff;
+            text-align: center;
+            padding: 20px;
+        }
+        .home-btn {
+    position: absolute;
+    top: 25px;
+    left: 35px;
+    font-size: 18px;
+    text-decoration: none;
+    padding: 10px 20px;
+    background: #594708;
+    color: rgb(255, 255, 255);
+    border-radius: 25px;
+    transition: 0.2s ease;
+}
+.home-btn:hover {
+    transform: scale(1.15);
+    background: #062a42;
+        }
+        .chat-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+        .message { margin: 5px 0; }
+        .user { text-align: right; color: blue; }
+        .bot { text-align: left; color: rgb(207, 198, 95); }
+        input[type="text"] { width: 80%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #41034c; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #184d98; }
+    </style>
+</head>
+<body>
+     <!-- Home Button -->
+   <a href="/hospitals/" class="home-btn">Home</a>
+    {% include 'includes/header.html' %}
+    <div class="chat-container">
+        <h1>Chatbot</h1>
+        <div class="chat-messages" id="chat-messages"></div>
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="askWaitingTime()">Waiting Time</button>
+        <button onclick="askQueueStatus()">Queue Status</button>
+    </div>
+    <script>
+        function addMessage(text, sender) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + sender;
+            messageDiv.innerText = text;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            if (!message) return;
+            addMessage(message, 'user');
+            input.value = '';
+
+            fetch('/chatbot/{{ token_id }}/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: 'message=' + encodeURIComponent(message)
+            })
+            .then(response => response.json())
+            .then(data => addMessage(data.response, 'bot'));
+        }
+
+        function askWaitingTime() {
+            fetch('/chatbot/{{ token_id }}/waiting_time/')
+                .then(response => response.json())
+                .then(data => addMessage(data.response, 'bot'));
+        }
+
+        function askQueueStatus() {
+            fetch('/chatbot/{{ token_id }}/queue_status/')
+                .then(response => response.json())
+                .then(data => addMessage(data.response, 'bot'));
+        }
+
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
