@@ -9,126 +9,163 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: #f4faff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ---------------- HERO SECTION ---------------- */
+        .hero-section {
+            height: 65vh;
+            width: 100%;
+            background: url('https://static.vecteezy.com/system/resources/previews/015/874/071/original/hospital-building-icon-in-flat-style-medical-clinic-illustration-on-isolated-background-medicine-sign-business-concept-vector.jpg');
+            background-size: 54%;
+            background-position: center;
+            position: cover;
+            display: flex;
+            justify-content: center;
+            align-items: down;
+            color: rgb(214, 36, 36);
+            text-shadow: 2px 2px 8px rgba(116, 175, 200, 0.75);
+        }
+
+        .hero-text {
+            font-size: 48px;
+            font-weight: 700;
+            text-align: down;
+        }
+
+        /* Phone number bottom right */
+        .phone {
+            position: absolute;
+            bottom: 25px;
+            right: 40px;
+            font-size: 20px;
+            padding: 10px 18px;
+            border-radius: 10px;
+        }
+
+        /* --------- Our Services Heading --------- */
+        .services-title {
             text-align: center;
-            padding: 20px;
+            margin-top: 40px;
+            margin-bottom: 10px;
+            font-size: 38px;
+            font-weight: 700;
+            color: #0e4c70;
         }
-        .home-btn {
-    position: absolute;
-    top: 25px;
-    left: 35px;
-    font-size: 18px;
-    text-decoration: none;
-    padding: 10px 20px;
-    background: #594708;
-    color: rgb(255, 255, 255);
-    border-radius: 25px;
-    transition: 0.2s ease;
-}
-.home-btn:hover {
-    transform: scale(1.15);
-    background: #062a42;
-}
 
-        /* Hospital Title with Icon */
-        h1 {
-            font-size: 54px;
-            color: #021008;
-            margin-top: 50px;
+        /* ---------------- SERVICE BOXES ---------------- */
+        .services-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 12px;
-        }
-        h1 i {
-            color: #e50303;
+            gap: 25px;
+            margin-top: 25px;
+            flex-wrap: wrap;
         }
 
-        /* Button Style */
-        button {
-            background: #239419;
-            color: white;
-            padding: 14px 25px;
-            border: none;
-            border-radius: 12px;
-            font-size: 25px;
-            cursor: pointer;
-            margin: 12px;
-            width: 230px;
-            transition: 0.3s ease;
-        }
-        button:hover {
-            background: #184d98;
-            transform: scale(1.17);
-        }
-
-        /* Box container */
-        .box-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 100px;
-        }
-
-        .box {
+        .service-box {
+            width: 340px;
+            padding: 22px;
             background: white;
-            padding: 25px;
-            width: 330px;
-            border-radius: 28px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-            animation: fadeIn 0.6s ease-in-out;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(54, 52, 52, 0.15);
+            animation: slideIn 0.7s ease-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes slideIn {
+            from { transform: translateX(-50px); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+
+        .service-box button {
+            background: #447d66;
+            color: rgb(246, 249, 252);
+            padding: 14px 25px;
+            width: 220px;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .service-box button:hover {
+            transform: scale(1.15);
+            background: #687683;
+        }
+
+        /* Home Button */
+        .home-btn {
+            position: absolute;
+            top: 25px;
+            left: 35px;
+            font-size: 18px;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: #594708;
+            color: white;
+            border-radius: 25px;
+            transition: 0.2s ease;
+            z-index: 999;
+        }
+        .home-btn:hover {
+            transform: scale(1.15);
+            background: #062a42;
         }
     </style>
 </head>
 
 <body>
-      {% include 'includes/header.html' %}
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
+
+    {% include 'includes/header.html' %}
+
     <!-- HOME BUTTON -->
     <a href="/hospitals/" class="home-btn">Home</a>
 
-    <!-- Hospital Title with Icon -->
-    <h1><i class="fa-solid fa-hospital"></i>{{ hospital.name }}</h1>
+    <!-- ----------- HERO SECTION ----------- -->
+    <div class="hero-section">
+        <div class="hero-text">Welcome to {{ hospital.name }} hospital</div>
+        <div class="phone"><i class="fa-solid fa-phone"></i> +91 9876543210</div>
+    </div>
 
-    <!-- Box Section -->
-    <div class="box-container">
-        <div class="box">
+    <!-- ----------- OUR SERVICES ----------- -->
+    <h2 class="services-title">Our Services</h2>
 
-            {% if has_beds %}
+    <div class="services-container">
+        
+        {% if has_beds %}
+        <div class="service-box">
             <a href="{% url 'beds:track_beds' hospital.id %}">
                 <button>Track Beds</button>
             </a>
-            {% endif %}
+        </div>
+        {% endif %}
 
-            {% if has_doctors %}
-            <a href="{% url 'appointments:book_appointment' hospital.id %}">
-                <button>Book Appointment</button>
-            </a>
-            {% endif %}
-
-            <!-- Book Token -->
+        <div class="service-box">
             <a href="{% url 'queues:book_token' hospital.id %}">
                 <button>Book Token</button>
             </a>
+        </div>
 
-            {% if user.is_superuser and user.username == hospital.name %}
+        {% if user.is_superuser and user.username == hospital.name %}
+        <div class="service-box">
             <a href="{% url 'queues:manage_queue' hospital.id %}">
                 <button>Manage Queue</button>
             </a>
-            {% endif %}
-
         </div>
+        {% endif %}
+         {% if has_doctors %}
+        <div class="service-box">
+            <a href="{% url 'appointments:book_appointment' hospital.id %}">
+                <button>Book Appointment</button>
+            </a>
+        </div>
+{%endif %}
     </div>
 
 </body>
 </html>
-

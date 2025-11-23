@@ -13,23 +13,50 @@
             background: #eef6ff;
             text-align: center;
             padding: 20px;
+            margin: 0;
+        }
+
+        /* Page wrapper to split left & right */
+        .page-wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            align-items: flex-start;
+        }
+
+        /* Left side: your original content */
+        .left-side {
+            width: 50%;
+        }
+
+        /* Right side background image */
+        .right-side {
+            width:50%;
+            background-image: url("https://static.vecteezy.com/system/resources/previews/045/757/046/non_2x/appointment-booking-flat-illustrations-vector.jpg");
+            background-size: cover;
+            background-position: cover;
+            border-radius: 20px;
+            margin-left: 0px;
+            margin-top: 0px;
+            height: 100vh;
         }
 
        .home-btn {
-    position: absolute;
-    top: 25px;
-    left: 35px;
-    font-size: 18px;
-    text-decoration: none;
-    padding: 10px 20px;
-    background: #594708;
-    color: rgb(255, 255, 255);
-    border-radius: 25px;
-    transition: 0.2s ease;
-}
-.home-btn:hover {
-    transform: scale(1.15);
-    background: #062a42;
+            position: absolute;
+            top: 25px;
+            left: 35px;
+            font-size: 18px;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: #594708;
+            color: rgb(255, 255, 255);
+            border-radius: 25px;
+            transition: 0.2s ease;
+        }
+
+        .home-btn:hover {
+            transform: scale(1.15);
+            background: #062a42;
         }
 
         /* Page Title */
@@ -42,6 +69,7 @@
             align-items: center;
             gap: 10px;
         }
+
         h1 i {
             color: #1b7de6;
         }
@@ -122,35 +150,47 @@
 
 <body>
 
-    <!-- Home Button -->
-   <a href="/hospitals/" class="home-btn">Home</a>
+<div class="page-wrapper">
 
-    <h1><i class="fa-solid fa-user-doctor"></i> Book Appointment</h1>
+    <!-- LEFT SIDE (Your original content) -->
+    <div class="left-side">
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
+        <!-- Home Button -->
+        <a href="/hospitals/" class="home-btn">Home</a>
 
-    <div class="doctor-container">
-        {% for doctor in doctors %}
-            <div class="doctor-box">
-                <h3><i class="fa-solid fa-user-md"></i> {{ doctor.name }} ({{ doctor.specialty }})</h3>
+        <h1><i class="fa-solid fa-user-doctor"></i> Book Appointment</h1>
 
-                <p><i class="fa-solid fa-calendar-day"></i> Date: <strong>{{ doctor.date }}</strong></p>
-                <p><i class="fa-solid fa-clock"></i> Time: <strong>{{ doctor.time }}</strong></p>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
 
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
-                    <button type="submit">Book</button>
-                </form>
-            </div>
-        {% empty %}
-            <p>No available doctors.</p>
-        {% endfor %}
+        <div class="doctor-container">
+            {% for doctor in doctors %}
+                <div class="doctor-box">
+                    <h3><i class="fa-solid fa-user-md"></i> {{ doctor.name }} ({{ doctor.specialty }})</h3>
+
+                    <p><i class="fa-solid fa-calendar-day"></i> Date: <strong>{{ doctor.date }}</strong></p>
+                    <p><i class="fa-solid fa-clock"></i> Time: <strong>{{ doctor.time }}</strong></p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+                        <button type="submit">Book</button>
+                    </form>
+                </div>
+            {% empty %}
+                <p>No available doctors.</p>
+            {% endfor %}
+        </div>
+
     </div>
+
+    <!-- RIGHT SIDE IMAGE -->
+    <div class="right-side"></div>
+
+</div>
 
 </body>
 </html>

@@ -7,33 +7,88 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4faff;
             margin: 0;
             padding: 0;
+            background: #f4faff;
+        }
+
+        /* MAIN SPLIT SCREEN */
+        .split-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* LEFT SIDE WITH IMAGE */
+        .left-side {
+            width: 50%;
+            background-image: url("https://img.freepik.com/free-vector/woman-setting-her-dates-appointment-booking_23-2148552955.jpg?semt=ais_hybrid&w=740");
+            background-size: cover;
+            background-position: center;
+             justify-content: center;
+            align-items: down;
+            color: rgb(214, 36, 36);
+            text-shadow: 2px 2px 8px rgba(116, 175, 200, 0.75);
+        }
+
+        .left-text {
+            font-size: 48px;
+            font-weight: 700;
+            text-align: down;
+        }
+
+        /* RIGHT SIDE */
+        .right-side {
+            width: 50%;
+            padding: 40px;
             text-align: center;
+            overflow-y: auto;
+            position: relative;
         }
 
         h1 {
-            margin-top: 30px;
             color: #1a3d5c;
+            margin-bottom: 30px;
         }
 
+        /* DOCTOR LIST */
         .doctor-list {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 0;
             list-style: none;
+            padding: 0;
+
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-width: 500px;
+            margin: auto;
+            margin-bottom: 160px; /* space for chat bar */
         }
 
+        /* Doctor sliding */
         .doctor-box {
             background: white;
-            margin: 15px 0;
-            padding: 20px;
+            padding: 18px 20px;
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+
             display: flex;
             justify-content: space-between;
             align-items: center;
+
+            opacity: 0;
+            transform: translateY(-40px);
+            animation: slideDown 0.7s ease-out forwards;
+        }
+
+        .doctor-box:nth-child(1) { animation-delay: 0.1s; }
+        .doctor-box:nth-child(2) { animation-delay: 0.3s; }
+        .doctor-box:nth-child(3) { animation-delay: 0.5s; }
+        .doctor-box:nth-child(4) { animation-delay: 0.7s; }
+        .doctor-box:nth-child(5) { animation-delay: 0.9s; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .doctor-name {
@@ -45,53 +100,55 @@
         button {
             background: #68090d;
             color: white;
-            border: none;
             padding: 8px 16px;
             border-radius: 8px;
+            border: none;
             cursor: pointer;
-            font-size: 14px;
         }
 
         button:hover {
             transform: scale(1.15);
-            background: #115e09;
+            background: #104570;
         }
 
         .back-link {
             display: inline-block;
-            margin-top: 35px;
-            padding:10px 20px;
-            background:#184d98;
-            color:white;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #2b3708;
+            color: white;
             border-radius: 18px;
             text-decoration: none;
         }
 
         .back-link:hover {
             transform: scale(1.15);
-            background: #133e7a;
+             background: #184888;
         }
 
-        /* Chat with Bot Title */
-        .chat-title {
-            margin-top: 45px;
-            font-size: 32px;
-            font-weight: bold;
-            color: #3e0404;
-        }
+        /* CHAT BAR AT BOTTOM RIGHT */
+        .chat-container {
+            position: absolute;
+             margin-top: 15px;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
 
-        /* Single Line Input Bar */
-        .chat-row {
+            width: 90%;
+            max-width: 600px;
+
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 18px;
-            margin-top: 15px;
+            gap: 15px;
         }
 
         .message-input {
-            width: 55%;
-            max-width: 500px;
+            width: 100%;
             padding: 12px 15px;
             font-size: 16px;
             border: 2px solid #bcd3ea;
@@ -100,7 +157,7 @@
         }
 
         .message-input:focus {
-            border-color: #239419;
+            border-color: #6c97db;
         }
 
         .icon-btn {
@@ -113,10 +170,11 @@
             cursor: pointer;
         }
 
-        .icon-btn:hover{
+        .icon-btn:hover {
             transform: scale(1.15);
             background: #184d98;
         }
+
     </style>
 
 </head>
@@ -124,33 +182,43 @@
 
     {% include 'includes/header.html' %}
 
-    <h1>Choose a doctor at {{ hospital.name }}</h1>
+    <div class="split-container">
 
-    <ul class="doctor-list">
-        {% for d in doctors %}
-            <li class="doctor-box">
-                <span class="doctor-name">{{ d }}</span>
-                <a href="{% url 'queues:book_token_doctor' d.id %}">
-                    <button>Book Token</button>
-                </a>
-            </li>
-        {% empty %}
-            <li class="doctor-box">No doctors available right now.</li>
-        {% endfor %}
-    </ul>
+        <!-- LEFT IMAGE -->
+        <div class="left-side">
+            <h1>Choose a doctor at {{ hospital.name }}</h1>
+        </div>
 
-    <a href="{% url 'hospitals:hospital_list' %}" class="back-link">Back</a>
+        <!-- RIGHT SIDE CONTENT -->
+        <div class="right-side">
 
-    <!-- Chat Title -->
-    <div class="chat-title">Chat with Bot</div>
+            <h1>Available doctors</h1>
 
-    <!-- Single Line Chat Input Row -->
-    <div class="chat-row">
-        <button class="icon-btn" onclick="speakText()">🔊</button>
+            <ul class="doctor-list">
+                {% for d in doctors %}
+                    <li class="doctor-box">
+                        <span class="doctor-name">{{ d }}</span>
+                        <a href="{% url 'queues:book_token_doctor' d.id %}">
+                            <button>Book Token</button>
+                        </a>
+                    </li>
+                {% empty %}
+                    <li class="doctor-box">No doctors available right now.</li>
+                {% endfor %}
+            </ul>
 
-        <input type="text" id="message-input" class="message-input" placeholder="Type your message here...">
+            <a href="{% url 'hospitals:hospital_list' %}" class="back-link">Back</a>
 
-        <button class="icon-btn" onclick="sendMessage()">Send</button>
+
+            <!-- CHAT INPUT BAR -->
+            <div class="chat-container">
+                <button class="icon-btn" onclick="speakText()">🔊</button>
+                <input type="text" id="message-input" class="message-input" placeholder="Type your message...">
+                <button class="icon-btn" onclick="sendMessage()">Send</button>
+            </div>
+
+        </div>
+
     </div>
 
     <script>
@@ -170,9 +238,7 @@
                 body: 'message=' + encodeURIComponent(message)
             })
             .then(response => response.json())
-            .then(data => {
-                lastBotMessage = data.response;
-            });
+            .then(data => { lastBotMessage = data.response; });
 
             input.value = "";
         }
@@ -180,9 +246,6 @@
         function speakText() {
             if (!lastBotMessage) return;
             const speech = new SpeechSynthesisUtterance(lastBotMessage);
-            speech.pitch = 1;
-            speech.rate = 1;
-            speech.volume = 1;
             window.speechSynthesis.speak(speech);
         }
 
@@ -193,4 +256,3 @@
 
 </body>
 </html>
-

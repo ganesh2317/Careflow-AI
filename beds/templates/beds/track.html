@@ -10,53 +10,75 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             background: #eef6ff;
-            text-align: center;
-            padding: 20px;
-        }
-.home-btn {
-    position: absolute;
-    top: 25px;
-    left: 35px;
-    font-size: 18px;
-    text-decoration: none;
-    padding: 10px 20px;
-    background: #594708;
-    color: rgb(255, 255, 255);
-    border-radius: 25px;
-    transition: 0.2s ease;
-}
-.home-btn:hover {
-    transform: scale(1.15);
-    background: #062a42;
-       
-        /* Title */
-        h1 {
-            font-size: 44px;
-            margin-top: 50px;
-            color: #0a3d62;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-        }
-        h1 i {
-            color: #007bff;
-        }
-    }
-        /* Main container box */
-        .box {
-            margin: 40px auto;
-            padding: 40px;
-            width: 520px;     /* BIGGER width */
-            background: white;
-            border-radius: 30px;
-            box-shadow: 0 7px 18px rgba(0,0,0,0.20);
-            animation: fadeIn 0.6s ease-in-out;
-            font-size: 19px;
         }
 
-        /* Each small info box */
+        /* ---------- TOP HALF IMAGE ---------- */
+        .top-half {
+            height: 60vh;
+            width: 100%;
+            background-image: url("https://img.freepik.com/free-vector/flat-nurse-helping-patient-background_23-2148149049.jpg?semt=ais_hybrid&w=740&q=80");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            position: relative;
+        }
+
+        /* Home Button on image */
+        .home-btn {
+            position: absolute;
+            top: 25px;
+            left: 35px;
+            font-size: 18px;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: #594708;
+            color: white;
+            border-radius: 25px;
+            transition: 0.2s ease;
+        }
+        .home-btn:hover {
+            transform: scale(1.15);
+            background: #062a42;
+        }
+
+        /* ---------- BOTTOM CONTENT ---------- */
+        .bottom-half {
+            padding: 40px 20px;
+            text-align: center;
+        }
+/* Title */
+h1 {
+    font-size: 44px;
+    color: #05253c;
+    position: relative;
+    margin-top: -150px;   /* ⬅ pulls title upward onto the image */
+    z-index: 10;
+}
+
+h1 i {
+    color: #007bff;
+}
+
+        /* Main container box */
+.box {
+    margin: -10px auto 10px;   /* ⬅ pulls the box upward */
+    padding: 40px;
+    width: 520px;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 7px 18px rgba(0,0,0,0.20);
+    animation: fadeIn 0.6s ease-in-out;
+    font-size: 19px;
+    position: relative;
+    z-index: 20;   /* ensures it appears above the image */
+}
+
+
+        /* Info boxes */
         .info-box {
             background: #f0f7ff;
             border-left: 6px solid #007bff;
@@ -67,7 +89,7 @@
             font-size: 28px;
         }
 
-        /* Hold Bed Button */
+        /* Button */
         button {
             background: #a41311;
             color: white;
@@ -85,10 +107,7 @@
         }
 
         /* Messages */
-        .messages {
-            list-style: none;
-            padding: 0;
-        }
+        .messages { list-style: none; padding: 0; }
         .messages li {
             color: #d00000;
             font-size: 16px;
@@ -113,53 +132,52 @@
 </head>
 
 <body>
-
-    <!-- HOME BUTTON -->
-    <a href="/hospitals/" class="home-btn">Home</a>
-
-    {% include 'includes/header.html' %}
-
-    <!-- Page Title -->
-    <h1><i class="fa-solid fa-bed"></i> Bed Availability</h1>
-
-    <!-- Main Box -->
-    <div class="box">
-
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        <!-- Available Beds box -->
-        <div class="info-box">
-            <strong>Available Beds:</strong> {{ available }}
-        </div>
-
-        <!-- Occupied Beds box -->
-        <div class="info-box">
-            <strong>Occupied Beds:</strong> {{ occupied }}
-        </div>
-
-        {% if user.is_authenticated %}
-            <form method="post" action="{% url 'beds:hold_bed' hospital.id %}">
-                {% csrf_token %}
-                <button type="submit">Hold Bed</button>
-            </form>
-        {% else %}
-            <p>
-                <a href="{% url 'accounts:login' %}?next={% url 'beds:track_beds' hospital.id %}">
-                    Log in to hold a bed
-                </a>
-            </p>
-        {% endif %}
+    <!-- ---------- TOP HALF IMAGE ---------- -->
+    <div class="top-half">
+        {% include 'includes/header.html' %}
+        <a href="/hospitals/" class="home-btn">Home</a>
     </div>
 
-    <!-- Emergency Note -->
-    <p class="note">⚠ Hold beds only in case of emergency</p>
+    <!-- ---------- BOTTOM HALF UI ---------- -->
+    <div class="bottom-half">
+
+        <h1><i class="fa-solid fa-bed"></i> Bed Availability</h1>
+
+        <div class="box">
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="info-box">
+                <strong>Available Beds:</strong> {{ available }}
+            </div>
+
+            <div class="info-box">
+                <strong>Occupied Beds:</strong> {{ occupied }}
+            </div>
+
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'beds:hold_bed' hospital.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Hold Bed</button>
+                </form>
+            {% else %}
+                <p>
+                    <a href="{% url 'accounts:login' %}?next={% url 'beds:track_beds' hospital.id %}">
+                        Log in to hold a bed
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+
+        <p class="note">⚠ Hold beds only in case of emergency</p>
+
+    </div>
 
 </body>
 </html>
-
