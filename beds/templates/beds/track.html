@@ -173,6 +173,40 @@ h1 i {
                     </a>
                 </p>
             {% endif %}
+
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <h2>Held Beds (Users Holding Beds)</h2>
+                    {% if bed_holds %}
+                        <ul>
+                            {% for hold in bed_holds %}
+                                <li>
+                                    {{ hold.user.username }} (held on {{ hold.hold_time|date:"Y-m-d H:i" }})
+                                    <a href="{% url 'beds:release_bed_hold' hold.id %}" class="release-btn">Release Hold</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No held beds currently.</p>
+                    {% endif %}
+                {% elif user.staff %}
+                    {% if user.username == hospital.name or user.staff_hospital_id == hospital.id %}
+                        <h2>Held Beds (Users Holding Beds)</h2>
+                        {% if bed_holds %}
+                            <ul>
+                                {% for hold in bed_holds %}
+                                    <li>
+                                        {{ hold.user.username }} (held on {{ hold.hold_time|date:"Y-m-d H:i" }})
+                                        <a href="{% url 'beds:release_bed_hold' hold.id %}" class="release-btn">Release Hold</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No held beds currently.</p>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
         </div>
 
         <p class="note">⚠ Hold beds only in case of emergency</p>

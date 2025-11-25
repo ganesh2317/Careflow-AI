@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Your Booked Appointments</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px auto;
+            max-width: 800px;
+            background: #eef6ff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #05253c;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #007bff;
+            padding: 12px;
+            text-align: left;
+            font-size: 18px;
+            color: #05253c;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .cancel-btn {
+            background: #a41311;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .cancel-btn:hover {
+            background: #1a24b6;
+            transform: scale(1.07);
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #c70000;
+            font-weight: bold;
+            text-align: center;
+        }
+        a.back-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007bff;
+            text-align: center;
+        }
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fa-solid fa-calendar-check"></i> Your Booked Appointments</h1>
+    {% if appointments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.doctor.name }}</td>
+                <td>{{ appointment.date|date:"Y-m-d" }}</td>
+                <td>{{ appointment.time|time:"H:i" }}</td>
+                <td>
+                    <form method="post" action="{% url 'accounts:cancel_booking' appointment.id %}" style="display:inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="cancel-btn">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="message">You have no booked appointments.</p>
+    {% endif %}
+    <a href="{% url 'accounts:landing_page' %}" class="back-link">&larr; Back to Home</a>
+</body>
+</html>

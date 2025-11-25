@@ -84,20 +84,27 @@
 </head>
 
 <body>
-
-
     <h1>WELCOME TO <span style="color:#FFD166;">CARE FLOW</span></h1>
 
     <h2>“Healing begins with organized care”</h2>
 
     <div>
-        <a href="{% url 'accounts:login' %}">
-            <button>Login</button>
-        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'accounts:user_bookings' %}">
+                <button>My Bookings</button>
+            </a>
+            <a href="{% url 'accounts:logout' %}">
+                <button>Logout</button>
+            </a>
+        {% else %}
+            <a href="{% url 'accounts:login' %}">
+                <button>Login</button>
+            </a>
 
-        <a href="{% url 'accounts:register' %}">
-            <button>Register</button>
-        </a>
+            <a href="{% url 'accounts:register' %}">
+                <button>Register</button>
+            </a>
+        {% endif %}
     </div>
 
 </body>
