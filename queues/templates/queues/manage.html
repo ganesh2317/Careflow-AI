@@ -7,14 +7,59 @@
 <body>
     <h1>Manage Queue for {{ hospital.name }}</h1>
     <h2>Current Queue</h2>
-    <ul>
+    <div>Queue size: <span id="queue-size">{{ queues|length }}</span></div>
+    <ul id="queue-list">
         {% for queue in queues %}
-        <li>Token {{ queue.token_number }} - Position {{ queue.position }}</li>
+        <li data-queue-id="{{ queue.id }}">Token <span class="token">{{ queue.token_number }}</span> - Position <span class="pos">{{ queue.position }}</span></li>
         {% endfor %}
     </ul>
     <a href="{% url 'queues:increment_queue' hospital.id %}"><button>+1</button></a>
     <a href="{% url 'queues:decrement_queue' hospital.id %}"><button>-1</button></a>
     <br><br>
     <a href="{% url 'hospitals:hospital_detail' hospital.id %}">Back to Hospital</a>
+    <script>
+        // Poll the server for updated positions and update the DOM
+    const hospitalId = "{{ hospital.id }}";
+        async function fetchPositions(){
+            try{
+                const resp = await fetch(`/queues/positions/${hospitalId}/`);
+                if(!resp.ok) return;
+                const json = await resp.json();
+                const map = new Map(json.queues.map(q => [q.id, q.position]));
+                // update queue size display
+                const sizeEl = document.getElementById('queue-size');
+                if(sizeEl && (typeof json.queue_size !== 'undefined')){
+                    sizeEl.textContent = json.queue_size;
+                }
+                document.querySelectorAll('#queue-list li').forEach(li => {
+                    const id = parseInt(li.getAttribute('data-queue-id'));
+                    if(map.has(id)){
+                        const newPos = map.get(id);
+                        const posSpan = li.querySelector('.pos');
+                        if(posSpan && posSpan.textContent != newPos){
+                            posSpan.textContent = newPos;
+                        }
+                    } else {
+                        // entry no longer present: remove it
+                        li.remove();
+                    }
+                });
+                // Append any new entries that aren't in the DOM yet
+                const existingIds = new Set(Array.from(document.querySelectorAll('#queue-list li')).map(li => parseInt(li.getAttribute('data-queue-id'))));
+                json.queues.forEach(q => {
+                    if(!existingIds.has(q.id)){
+                        const li = document.createElement('li');
+                        li.setAttribute('data-queue-id', q.id);
+                        li.innerHTML = `Token <span class="token">${q.token_number}</span> - Position <span class="pos">${q.position}</span>`;
+                        document.getElementById('queue-list').appendChild(li);
+                    }
+                });
+            }catch(e){
+                console.error('Failed to fetch positions', e);
+            }
+        }
+        // Poll every 3 seconds
+        setInterval(fetchPositions, 3000);
+    </script>
 </body>
 </html>

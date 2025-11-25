@@ -197,4 +197,38 @@ class QueueAdmin(admin.ModelAdmin):
 
     actions = [increment_position, decrement_position]
 
+    def delete_queryset(self, request, queryset):
+        """Delete queryset by iterating so post_delete signals run and positions shift."""
+        for obj in queryset.order_by('-position'):
+            obj.delete()
+
+    def delete_selected_and_normalize(self, request, queryset):
+        """Admin action: delete selected rows and normalize remaining positions."""
+        # Collect affected hospitals/doctors to re-normalize after deletes
+        hospitals = set()
+        doctors = set()
+        for obj in queryset:
+            if obj.hospital_id:
+                hospitals.add(obj.hospital_id)
+            if obj.doctor_id:
+                doctors.add(obj.doctor_id)
+            obj.delete()
+
+        # Import normalize helper and run for affected groups
+        try:
+            from .models import normalize_positions
+            for d in doctors:
+                from appointments.models import Doctor
+                normalize_positions(doctor=Doctor.objects.get(pk=d))
+            for h in hospitals:
+                from hospitals.models import Hospital
+                normalize_positions(hospital=Hospital.objects.get(pk=h))
+        except Exception:
+            pass
+
+        self.message_user(request, f"Deleted selected queues and re-normalized positions for affected hospitals/doctors.")
+
+    delete_selected_and_normalize.short_description = "Delete selected and normalize positions"
+    actions.append(delete_selected_and_normalize)
+
 admin.site.register(Queue, QueueAdmin)

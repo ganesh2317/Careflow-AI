@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Your bookings</title>
+  </head>
+  <body>
+    {% include 'includes/header.html' %}
+
+    <main style="padding:20px;max-width:1000px;margin:0 auto;">
+      <h2>Your bookings</h2>
+      {% if appointments %}
+        <table border="0" cellpadding="8" style="border-collapse:collapse; width:100%;">
+          <thead style="text-align:left;">
+            <tr>
+              <th>Hospital</th>
+              <th>Doctor</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in appointments %}
+              <tr style="border-top:1px solid #eee;">
+                <td>{{ a.doctor.hospital.name }}</td>
+                <td>{{ a.doctor.name }}</td>
+                <td>{{ a.date }}</td>
+                <td>{{ a.time }}</td>
+                <td>
+                  <form method="post" action="{% url 'appointments:cancel_booking' a.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirm('Cancel this appointment?')">Cancel</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No bookings found.</p>
+      {% endif %}
+    </main>
+  </body>
+</html>

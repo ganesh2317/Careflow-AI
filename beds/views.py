@@ -5,6 +5,7 @@ from django.db import transaction
 from django.contrib import messages
 
 from .models import Bed
+from .models import BedHold
 from hospitals.models import Hospital
 
 
@@ -33,10 +34,18 @@ def hold_bed(request, hospital_id):
             messages.error(request, 'No beds available to hold.')
             return redirect('beds:track_beds', hospital_id=hospital_id)
 
+        # Prevent duplicate holds by same user
+        if request.user.is_authenticated and BedHold.objects.filter(hospital=hospital, user=request.user).exists():
+            messages.error(request, 'You already hold a bed at this hospital.')
+            return redirect('beds:track_beds', hospital_id=hospital_id)
+
         bed.available = F('available') - 1
         bed.occupied = F('occupied') + 1
         bed.save()
         bed.refresh_from_db()
+
+        # Record the hold
+        BedHold.objects.create(hospital=hospital, user=(request.user if request.user.is_authenticated else None))
 
     messages.success(request, 'Bed held successfully.')
     return redirect('beds:track_beds', hospital_id=hospital_id)

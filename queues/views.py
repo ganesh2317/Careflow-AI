@@ -3,6 +3,7 @@ from django.db.models import Max
 from .models import Queue
 from hospitals.models import Hospital
 import uuid
+from django.http import JsonResponse
 
 
 def book_token(request, hospital_id):
@@ -43,6 +44,14 @@ def manage_queue(request, hospital_id):
     hospital = get_object_or_404(Hospital, id=hospital_id)
     queues = Queue.objects.filter(hospital=hospital).order_by('position')
     return render(request, 'queues/manage.html', {'hospital': hospital, 'queues': queues})
+
+
+def positions_json(request, hospital_id):
+    """Return JSON list of queue entries (id, token_number, position) for the hospital."""
+    hospital = get_object_or_404(Hospital, id=hospital_id)
+    qs = Queue.objects.filter(hospital=hospital).order_by('position')
+    data = [{'id': q.id, 'token_number': q.token_number, 'position': q.position} for q in qs]
+    return JsonResponse({'queues': data, 'queue_size': qs.count()})
 
 def increment_queue(request, hospital_id):
     hospital = get_object_or_404(Hospital, id=hospital_id)

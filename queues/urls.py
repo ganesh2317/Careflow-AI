@@ -9,6 +9,7 @@ urlpatterns = [
     path('confirm/<int:token_id>/', views.token_confirm, name='token_confirm'),
     path('query/<int:token_id>/', views.query_token, name='query_token'),
     path('manage/<int:hospital_id>/', views.manage_queue, name='manage_queue'),
+    path('positions/<int:hospital_id>/', views.positions_json, name='positions_json'),
     path('increment/<int:hospital_id>/', views.increment_queue, name='increment_queue'),
     path('decrement/<int:hospital_id>/', views.decrement_queue, name='decrement_queue'),
 ]

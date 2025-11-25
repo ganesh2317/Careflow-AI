@@ -3,6 +3,8 @@ from .models import Doctor, Appointment, DoctorAvailability
 from hospitals.models import Hospital
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.http import HttpResponseForbidden
 
 @login_required
 def book_appointment(request, hospital_id):
@@ -22,3 +24,22 @@ def book_appointment(request, hospital_id):
         else:
             messages.error(request, 'Invalid request.')
     return render(request, 'appointments/book.html', {'doctors': doctors})
+
+
+@login_required
+def my_bookings(request):
+    """List current user's appointments with option to cancel."""
+    appointments = Appointment.objects.filter(user=request.user).order_by('date', 'time')
+    return render(request, 'appointments/my_bookings.html', {'appointments': appointments})
+
+
+@login_required
+@require_POST
+def cancel_booking(request, appointment_id):
+    appt = get_object_or_404(Appointment, id=appointment_id)
+    # Only owner may cancel
+    if appt.user != request.user:
+        return HttpResponseForbidden('Not allowed')
+    appt.delete()
+    messages.success(request, 'Appointment cancelled.')
+    return redirect('appointments:my_bookings')

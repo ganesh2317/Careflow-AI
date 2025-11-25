@@ -1,0 +1,29 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Careflow{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  {% include 'includes/header.html' %}
+
+  <main style="padding:20px;max-width:1000px;margin:0 auto;">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer style="text-align:center;padding:20px 0;color:#666;font-size:0.9rem;">
+    <small>&copy; {{ now|date:"Y" }} Careflow</small>
+  </footer>
+</body>
+</html>
