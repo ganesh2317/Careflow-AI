@@ -212,6 +212,7 @@
 
             <!-- CHAT INPUT BAR -->
             <div class="chat-container">
+                <div id="chat-messages" style="flex:1; max-height:160px; overflow-y:auto; text-align:left; padding:8px; border-radius:8px; border:1px solid #eee; background:#fafafa; margin-right:10px;"></div>
                 <button class="icon-btn" onclick="speakText()">🔊</button>
                 <input type="text" id="message-input" class="message-input" placeholder="Type your message...">
                 <button class="icon-btn" onclick="sendMessage()">Send</button>
@@ -224,12 +225,33 @@
     <script>
         let lastBotMessage = "";
 
+        function addMessage(text, sender){
+            const messagesDiv = document.getElementById('chat-messages');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message ' + sender;
+            wrapper.style.margin = '6px 0';
+            wrapper.style.padding = '6px 8px';
+            wrapper.style.borderRadius = '6px';
+            if(sender === 'user'){
+                wrapper.style.textAlign = 'right';
+                wrapper.style.background = '#e8f0ff';
+            } else {
+                wrapper.style.textAlign = 'left';
+                wrapper.style.background = '#f3f7f3';
+            }
+            wrapper.innerText = text;
+            messagesDiv.appendChild(wrapper);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
         function sendMessage() {
             const input = document.getElementById("message-input");
             const message = input.value.trim();
             if (!message) return;
+            // show user message in UI
+            addMessage(message, 'user');
 
-            fetch('/chatbot/general/chat/', {
+            fetch("{% url 'chatbot:general_chat_message' %}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -237,8 +259,18 @@
                 },
                 body: 'message=' + encodeURIComponent(message)
             })
-            .then(response => response.json())
-            .then(data => { lastBotMessage = data.response; });
+            .then(response => {
+                if(!response.ok) throw new Error('Server error ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                lastBotMessage = data.response;
+                addMessage(data.response, 'bot');
+            })
+            .catch(err => {
+                console.error('Chat request failed', err);
+                addMessage('Chatbot is unavailable right now. Please try again later.', 'bot');
+            });
 
             input.value = "";
         }

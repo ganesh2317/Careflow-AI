@@ -134,8 +134,15 @@
                 },
                 body: 'message=' + encodeURIComponent(message)
             })
-            .then(response => response.json())
-            .then(data => addMessage(data.response, 'bot'));
+            .then(response => {
+                if (!response.ok) throw new Error('Server returned ' + response.status);
+                return response.json();
+            })
+            .then(data => addMessage(data.response, 'bot'))
+            .catch(err => {
+                console.error('Chat request failed', err);
+                addMessage('Chatbot is unavailable right now. Please try again later.', 'bot');
+            });
         }
 
         function askWaitingTime() {

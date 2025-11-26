@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>General Chatbot</title>
+
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background: #f4faff;
-            text-align: center;
-            padding: 20px;
             background: url("https://media.istockphoto.com/vectors/online-medicine-isometric-vector-id1338924812?k=20&m=1338924812&s=612x612&w=0&h=y5aWJ_aMD1nO5l3qT_Fb7MJgW1b26s9jlYB5JK3s-ek=")
-                    no-repeat center center/cover;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+                        center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 80px;
+            min-height: 100vh;
         }
+
         .home-button {
             position: absolute;
             top: 20px;
@@ -29,74 +35,154 @@
             cursor: pointer;
             text-decoration: none;
         }
+
         .home-button:hover {
             background: #184d98;
         }
+
         .chat-container {
             max-width: 600px;
-            margin: 0 auto;
+            width: 90%;
             background: white;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 20px 24px 24px 24px; /* extra left padding to avoid overlapping left-side scrollbar */
+            position: relative;
+            box-sizing: border-box;
+            min-width: 420px;
+            z-index: 50; /* keep chat above floating controls */
+            margin: 20px auto; /* ensure centered with space around */
         }
+
+        #hospital-info {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
         .chat-messages {
             height: 300px;
             overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: #fafafa;
+            border: 1px solid #f3e8e8;
+            padding: 12px 16px 12px 48px; /* extra left padding so messages don't sit under left-side widgets */
+            margin-top: 20px;
+            background: #f8f3f3;
+            border-radius: 10px;
+            direction: ltr; /* ensure scrollbar on right */
+            scrollbar-gutter: stable both-edges;
         }
-        .message { margin: 5px 0; }
-        .user { text-align: right; color: blue; }
-        .bot { text-align: left; color: green; }
-        input[type="text"] { width: 80%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        button { padding: 10px 20px; background: #239419; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
-        button:hover { background: #184d98; }
+
+        .message { margin: 6px 0; word-wrap: break-word; white-space: pre-wrap; max-width: calc(100% - 60px); }
+        .user { display: block; margin-left: auto; text-align: right; color: #0b66c3; max-width: calc(100% - 60px); }
+        .bot { display: block; margin-right: auto; text-align: left; color: #117a0e; max-width: calc(100% - 60px); }
+        .message.user, .message.bot { padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,0.95); }
+
+        #message-input {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background: #239419;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #184d98;
+        }
     </style>
 </head>
+
 <body>
+
     <a href="{% url 'accounts:landing' %}" class="home-button">Home</a>
     {% include 'includes/header.html' %}
+
     <div class="chat-container">
-        <h1>General Chatbot</h1>
-        <div class="chat-messages" id="chat-messages"></div>
+        <h1 style="text-align:center;">General Chatbot</h1>
+
+        <div id="hospital-info"></div>
+
         <input type="text" id="message-input" placeholder="Type your message...">
         <button onclick="sendMessage()">Send</button>
+
+        <!-- Move chat messages below the input so replies appear under the box -->
+        <div class="chat-messages" id="chat-messages"></div>
     </div>
+
     <script>
         function addMessage(text, sender) {
-            const messagesDiv = document.getElementById('chat-messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message ' + sender;
+            const messagesDiv = document.getElementById("chat-messages");
+            const messageDiv = document.createElement("div");
+            messageDiv.className = "message " + sender;
             messageDiv.innerText = text;
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
         function sendMessage() {
-            const input = document.getElementById('message-input');
+            const input = document.getElementById("message-input");
             const message = input.value.trim();
             if (!message) return;
-            addMessage(message, 'user');
-            input.value = '';
 
-            fetch('/chatbot/general/chat/', {
-                method: 'POST',
+            addMessage(message, "user");
+            input.value = "";
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const hospitalId = urlParams.get("hospital_id");
+
+            let body = "message=" + encodeURIComponent(message);
+            if (hospitalId) body += "&hospital_id=" + encodeURIComponent(hospitalId);
+
+            fetch("{% url 'chatbot:general_chat_message' %}", {
+                method: "POST",
+                credentials: "same-origin",
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': '{{ csrf_token }}'
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
                 },
-                body: 'message=' + encodeURIComponent(message)
+                body: body
             })
-            .then(response => response.json())
-            .then(data => addMessage(data.response, 'bot'));
+            .then(response => response.text())
+            .then(text => {
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    data = { response: text };
+                }
+                addMessage(data.response, "bot");
+            })
+            .catch(err => addMessage("Error: " + err.message, "bot"));
         }
 
-        document.getElementById('message-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendMessage();
+        // Show hospital ID note on load
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const hid = params.get("hospital_id");
+            if (hid) {
+                document.getElementById("hospital-info").innerText =
+                    "Chatting about hospital id: " + hid +
+                    " — answers are scoped to that hospital.";
+            }
+        })();
+
+        document.getElementById("message-input").addEventListener("keypress", function (e) {
+            if (e.key === "Enter") sendMessage();
         });
     </script>
+
 </body>
 </html>
+
