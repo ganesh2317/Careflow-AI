@@ -25,7 +25,6 @@ def book_appointment(request, hospital_id):
             messages.error(request, 'Invalid request.')
     return render(request, 'appointments/book.html', {'doctors': doctors})
 
-<<<<<<< HEAD
 @login_required
 def admin_appointment_list(request):
     # Display all appointments for the admin's hospital(s)
@@ -38,14 +37,12 @@ def admin_appointment_list(request):
     appointments = Appointment.objects.select_related('user', 'doctor', 'doctor__hospital').order_by('date', 'time')
 
     return render(request, 'appointments/admin_appointment_list.html', {'appointments': appointments})
-=======
 
 @login_required
 def my_bookings(request):
     """List current user's appointments with option to cancel."""
     appointments = Appointment.objects.filter(user=request.user).order_by('date', 'time')
     return render(request, 'appointments/my_bookings.html', {'appointments': appointments})
-
 
 @login_required
 @require_POST
@@ -57,4 +54,3 @@ def cancel_booking(request, appointment_id):
     appt.delete()
     messages.success(request, 'Appointment cancelled.')
     return redirect('appointments:my_bookings')
->>>>>>> 0995a416314d7bca5011e68c76f0258aae0cca4d

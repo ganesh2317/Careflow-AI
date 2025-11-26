@@ -12,7 +12,6 @@
             margin: 0;
         }
 
-        /* TOP HALF IMAGE SECTION */
         .top-image {
             width: 100%;
             height: 65vh;
@@ -21,9 +20,8 @@
             position: relative;
         }
 
-        /* Chatbot moves up over the image slightly */
         .chat-wrapper {
-            margin-top: -80px;   /* 👈 moves chatbot UP on top of image */
+            margin-top: -80px;
             display: flex;
             justify-content: center;
             width: 100%;
@@ -49,13 +47,13 @@
 
         .chat-container {
             max-width: 760px;
-            margin: -360px auto 40px auto; /* move up */
+            margin: -360px auto 40px auto;
             width: 90%;
             background: rgba(255, 255, 255, 0.673);
             border-radius: 20px;
             box-shadow: 0 4px 14px rgba(0,0,0,0.15);
             padding: 25px;
-              z-index: 5;
+            z-index: 5;
         }
 
         .chat-messages {
@@ -93,13 +91,10 @@
 
 <body>
 
-    <!-- Home Button -->
     <a href="/hospitals/" class="home-btn">Home</a>
 
-    <!-- TOP IMAGE -->
     <div class="top-image"></div>
 
-    <!-- CHATBOT SECTION placed overlapping from bottom of image -->
     <div class="chat-wrapper">
         <div class="chat-container">
             <h1>Chatbot</h1>
@@ -131,7 +126,7 @@
             addMessage(message, 'user');
             input.value = '';
 
-            fetch('/chatbot/{{ token_id }}/chat/', {
+            fetch("{% url 'chatbot:chat_message' token_id %}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -144,13 +139,13 @@
         }
 
         function askWaitingTime() {
-            fetch('/chatbot/{{ token_id }}/waiting_time/')
+            fetch("{% url 'chatbot:waiting_time' token_id %}")
                 .then(response => response.json())
                 .then(data => addMessage(data.response, 'bot'));
         }
 
         function askQueueStatus() {
-            fetch('/chatbot/{{ token_id }}/queue_status/')
+            fetch("{% url 'chatbot:queue_status' token_id %}")
                 .then(response => response.json())
                 .then(data => addMessage(data.response, 'bot'));
         }
